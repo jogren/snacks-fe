@@ -1,26 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  constructor() {
+    super();
+    this.state = {
+      snacks: [],
+      error: ''
+    }
+  }
+
+  componentDidMount = async () => {
+    try {
+      const response = await fetch(process.env.REACT_APP_BACKEND_URL + '/api/v1/snacks')
+      const snacks = await response.json();
+      this.setState({ snacks: snacks.snacks })
+    } catch(error) {
+      this.setState({ error: 'There was an error fetching your data' })
+    }
+  }
+
+  render() {
+    const { snacks, error } = this.state
+    let snacksList = snacks.map((snack, index) => {
+      return <div key={index}>
+        <p>{snack.name}</p>
+        <p>{snack.type}</p>
+      </div>
+    })
+    console.log('snacks', this.state.snacks)
+    console.log('error', this.state.erro)
+    return (
+      <main>
+        {snacksList}
+      </main>
+    );
+  }
 }
 
 export default App;
